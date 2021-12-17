@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:path/path.dart' as p;
+
 import 'package:flutter/material.dart';
 import 'package:shareminator/components/file_widget.dart';
 import 'package:shareminator/models/folder.dart';
@@ -52,12 +56,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Folder>? futureFolder;
-  String path = "/";
+  String currentPath = "/";
 
   @override
   void initState() {
     super.initState();
-    futureFolder = browseFile(path);
+    futureFolder = browseFile(currentPath);
   }
 
   @override
@@ -73,6 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        leading: currentPath == "/"
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+
+                  setState(() {
+                    currentPath = p.dirname(currentPath);
+                    futureFolder = browseFile(currentPath);
+                    log("back: setState for $currentPath");
+                  });
+                },
+              ),
       ),
       body: Center(
         child: FutureBuilder<Folder>(
@@ -87,8 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         onTap: () {
                           if (data.elements[index].isFolder) {
                             setState(() {
-                              futureFolder = browseFile(path);
-                              path = path + "/" + data.elements[index].name;
+                              currentPath = p.join(currentPath, data.elements[index].name);
+                              futureFolder = browseFile(currentPath);
+                              log("browse: setState for $currentPath");
                             });
                           }
                         },
