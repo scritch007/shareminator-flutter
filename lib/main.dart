@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shareminator/models/file.dart';
+import 'package:shareminator/components/file_widget.dart';
 import 'package:shareminator/models/folder.dart';
 import 'package:shareminator/services/files.dart';
 
@@ -52,8 +52,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Folder>? futureFolder;
-  String path ="/";
-
+  String path = "/";
 
   @override
   void initState() {
@@ -76,17 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: FutureBuilder <Folder>(
+        child: FutureBuilder<Folder>(
           future: futureFolder,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               Folder data = snapshot.data!;
-              return
-                ListView.builder(
-                    itemCount: data.elements.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return InkWell(
-                        onTap: (){
+              return ListView.builder(
+                  itemCount: data.elements.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return InkWell(
+                        onTap: () {
                           if (data.elements[index].isFolder) {
                             setState(() {
                               futureFolder = browseFile(path);
@@ -95,17 +93,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           }
                         },
                         child: Ink(
-                          child:  Container(
-                            height: 75,
-                            color: Colors.white,
-                            child: Center(child: Text(data.elements[index].name),
-                            ),),
-                        )
-                      );
-                    }
-                );
+                          child: FileWidget(file: data.elements[index]),
+                        ));
+                  });
             } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
+              return Text("fetch error: ${snapshot.error}");
             }
             // By default show a loading spinner.
             return const CircularProgressIndicator();

@@ -12,7 +12,7 @@ class Folder {
     List<File> elements = map.toList();
 
     return Folder(
-      current: File.fromJson(json['current']),
+      current: File.fromJson(json['current_item']),
       elements: elements,
     );
   }
